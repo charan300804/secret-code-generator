@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherVault - Premium Encryptor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #09090e;
+            --card: rgba(20, 20, 32, 0.7);
+            --border: rgba(255,255,255,0.06);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.15);
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        body {
+            background-color: var(--bg); color: var(--text); min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .container {
+            width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--border);
+            border-radius: 28px; padding: 32px; backdrop-filter: blur(16px);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.5);
+        }
+        h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; text-align: center; background: linear-gradient(135deg, #93c5fd, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p.subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+        textarea, select {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px; color: white; font-size: 14px; outline: none; transition: 0.3s;
+            resize: none;
+        }
+        textarea { height: 100px; }
+        textarea:focus, select:focus { border-color: var(--primary); }
+        .control-row { display: flex; gap: 14px; margin: 16px 0; }
+        .btn {
+            flex: 1; background: var(--primary); color: white; border: none; border-radius: 12px;
+            padding: 14px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--primary-glow); }
+        .output-box {
+            background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 16px; padding: 20px; text-align: center; margin-top: 24px; position: relative;
+        }
+        .output-text { font-size: 16px; font-weight: 600; color: white; word-break: break-all; margin-top: 4px; }
+        .copy-btn { position: absolute; right: 12px; top: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px; }
+        .copy-btn:hover { color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CipherVault</h1>
+        <p class="subtitle">Secure Message Code Generator</p>
+        
+        <textarea id="input-text" placeholder="Enter message here..."></textarea>
+        
+        <div class="control-row">
+            <select id="cipher-type">
+                <option value="rot13">ROT13 Cipher</option>
+                <option value="base64">Base64 Encoding</option>
+                <option value="reverse">Reverse Text</option>
+            </select>
+        </div>
+
+        <div class="control-row">
+            <button class="btn" onclick="process('encode')">Encode</button>
+            <button class="btn" style="background:#1e293b; color:var(--text);" onclick="process('decode')">Decode</button>
+        </div>
+
+        <div class="output-box">
+            <button class="copy-btn" onclick="copyText()">Copy</button>
+            <div style="font-size:12px; color: var(--text-muted); text-align:left;">Output Result</div>
+            <div class="output-text" id="output">...</div>
+        </div>
+    </div>
+    <script>
+        const input = document.getElementById('input-text');
+        const cipher = document.getElementById('cipher-type');
+        const output = document.getElementById('output');
+
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+            });
+        }
+
+        function process(mode) {
+            const txt = input.value;
+            const type = cipher.value;
+            let result = '';
+
+            if (type === 'rot13') {
+                result = rot13(txt);
+            } else if (type === 'base64') {
+                try {
+                    result = mode === 'encode' ? btoa(txt) : atob(txt);
+                } catch {
+                    result = "Error: Invalid Base64 string for decoding.";
+                }
+            } else if (type === 'reverse') {
+                result = txt.split('').reverse().join('');
+            }
+            output.innerText = result || '...';
+        }
+
+        function copyText() {
+            navigator.clipboard.writeText(output.innerText);
+            alert("Copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
